@@ -101,7 +101,7 @@ class Map:
                                       Position(button.location[1][0], button.location[1][1]))
         return player
     
-    def legalMoves(self, player: Player, arr: list) -> list:
+    def allMoves(self, player: Player, arr: list) -> list:
         moves = []
         if isinstance(player, DetachedPlayer):
             for i in range(1,5):
@@ -113,9 +113,29 @@ class Map:
                     newMove2 = Player(newMove2.p1, newMove2.p2)
                 moves.append((newMove1, "(" + str(Move(i)) + ",)", self.newMapIfButtonPressed(newMove1, arr)))
                 moves.append((newMove2, "(," + str(Move(i)) + ")", self.newMapIfButtonPressed(newMove2, arr)))
-            return [(move, dir, newMap) for (move, dir, newMap) in moves if self.canHold(move, arr)]
+            return moves
         else:
             for i in range(1,5):
                 newMove = self.dupButtonPressed(player.Moves(i))
                 moves.append((newMove, str(Move(i)), self.newMapIfButtonPressed(newMove, arr)))
-            return [(move, dir, newMap) for (move, dir, newMap) in moves if self.canHold(move, arr)]
+            return moves
+
+    def legalMoves(self, player: Player, arr: list) -> list:
+        # moves = []
+        # if isinstance(player, DetachedPlayer):
+        #     for i in range(1,5):
+        #         newMove1 = DetachedPlayer(player.p1.Move(i), player.p2)
+        #         newMove2 = DetachedPlayer(player.p1, player.p2.Move(i))
+        #         if newMove1.hasAttached():
+        #             newMove1 = Player(newMove1.p1, newMove1.p2)
+        #         if newMove2.hasAttached():
+        #             newMove2 = Player(newMove2.p1, newMove2.p2)
+        #         moves.append((newMove1, "(" + str(Move(i)) + ",)", self.newMapIfButtonPressed(newMove1, arr)))
+        #         moves.append((newMove2, "(," + str(Move(i)) + ")", self.newMapIfButtonPressed(newMove2, arr)))
+        #     return [(move, dir, newMap) for (move, dir, newMap) in moves if self.canHold(move, arr)]
+        # else:
+        #     for i in range(1,5):
+        #         newMove = self.dupButtonPressed(player.Moves(i))
+        #         moves.append((newMove, str(Move(i)), self.newMapIfButtonPressed(newMove, arr)))
+        #     return [(move, dir, newMap) for (move, dir, newMap) in moves if self.canHold(move, arr)]
+        return [(move, dir, newMap) for (move, dir, newMap) in self.allMoves(player, arr) if self.canHold(move, arr)]

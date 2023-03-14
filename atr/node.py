@@ -44,3 +44,18 @@ class A_star_Node(Node):
 
     def __lt__(self, __o):
         return self.f < __o.f
+    
+class MC_Node(Node):
+    def __init__(self, arr: list, player: Player, move: str, parent, children: list[object]):
+        super().__init__(arr, player, move, parent)
+        self.children = children
+
+    # def isLoseState(self) -> bool:
+    #     return not (self.arr[self.player.p1.x][self.player.p1.y] and self.arr[self.player.p2.x][self.player.p2.y])
+    
+    # def isWinState(self) -> bool:
+    #     return self.player.isStanding() and self.player.p1 == self.goal
+    
+    # def isTerminalState(self) -> bool:
+    #     return self.isWinState() or self.isLoseState()
+    
