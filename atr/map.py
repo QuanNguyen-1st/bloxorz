@@ -16,6 +16,7 @@ class Map:
     height = 0
     buttons = []
     # tile = Tiles()
+    isPlayerSplitted = False
 
     def __init__(self, dict):
         self.readLevel(dict)
@@ -97,6 +98,9 @@ class Map:
     def dupButtonPressed(self, player: Player) -> Player:
         for button in self.buttons:
             if isinstance(button, bt.Dup) and button.isPressed(player):
+
+                self.isPlayerSplitted = True
+
                 return DetachedPlayer(Position(button.location[0][0], button.location[0][1]), \
                                       Position(button.location[1][0], button.location[1][1]))
         return player

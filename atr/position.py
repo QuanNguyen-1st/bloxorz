@@ -36,6 +36,8 @@ class Position:
             return self.Up()
         elif dir == 4:
             return self.Down()
+        elif dir == 0:
+            return self
         
 
     def move(self, dx, dy):

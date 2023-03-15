@@ -1,6 +1,7 @@
 import enum
 
 class Move(enum.Enum):
+    NoMove = 0
     Left = 1
     Right = 2
     Up = 3

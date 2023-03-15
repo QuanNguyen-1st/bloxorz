@@ -12,8 +12,71 @@ import time
 from drawing.display import Display
 from drawing.box import Box
 from drawing.color import colors
+from OpenGL.GL import *
+from OpenGL.GLU import *
 
-game = Map("level/04.txt")
+pygame.init()
+game = Map("level/08.txt")
+display = Display(title='Bloxorz Game', map_size=(game.height, game.width))
+
+split1 = 1
+split2 = 0
+
+def switchSplit():
+    global split1
+    global split2
+    temp = split1
+    split1 = split2
+    split2 = temp
+
+def moveGame(i):
+    global player
+    if game.isPlayerSplitted:
+        player = DetachedPlayer(player.p1.Move(i * split1), player.p2.Move(i * split2))
+        temp = DetachedPlayer(player.p2, player.p1)
+        if temp.hasAttached():
+            game.isPlayerSplitted = False
+            player = Player(player.p1, player.p2)
+    else:
+        player = player.Moves(i)
+        game.arr = game.newMapIfButtonPressed(player, game.arr)
+        player = game.dupButtonPressed(player)
+
+def draw_player():
+    if game.isPlayerSplitted:
+        Box.draw_box(position=(player.p1.y, player.p1.x), size=(1,1,1))
+        Box.draw_box(position=(player.p2.y, player.p2.x), size=(1,1,1))
+    else:
+        if player.isStanding():
+            size = (1,1,2)
+        elif player.isHorizontal():
+            size = (2,1,1)
+        else:
+            size = (1,2,1)
+        Box.draw_box(position=(player.p2.y, player.p2.x), size=size)
+
+def draw_maps():
+    for x in range(game.height):
+        for y in range(game.width):
+            if x == game.goal.x and y == game.goal.y:
+                continue
+            elif game.weakArr[x][y]:
+                Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['orange'])
+            elif game.specialArr[x][y] == 3:
+                Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['green'])
+            elif game.specialArr[x][y] == 4:
+                Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['white'])
+            elif game.specialArr[x][y] == 5:
+                Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['blue'])
+            elif game.specialArr[x][y] == 6:
+                Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['pink'])
+            elif game.specialArr[x][y] == 7:
+                Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['red'])
+            elif game.specialArr[x][y] == 8:
+                Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['yellow'])
+            elif game.arr[x][y]:
+                Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['gray'])
+
 
 start_time = time.time()
 
@@ -24,88 +87,83 @@ print("Time process: ", time.time() - start_time)
 winPath = bfs.winPath
 print(winPath)
 solution = list(winPath.split(" "))
+i=0
+steps = solution.__len__()
 
 # astar = AStar(game)
 # astar.solve()
 # print(astar.winPath)
 
-def draw_maps():
-    for x in range(game.width):
-        for y in range(game.height):
-            if x == game.goal.y and y == game.goal.x:
-                continue
-            elif game.weakArr[y][x]:
-                Box.draw_box(position=(x, y), size=(1, 1, -0.3), face_color=colors['orange'])
-            elif game.arr[y][x]:
-                Box.draw_box(position=(x, y), size=(1, 1, -0.3), face_color=colors['gray'])
-            
-
-pygame.init()
-display = Display(title='Bloxorz Game', map_size=(6,10))
-
-x=game.start.x
-y=game.start.y
-player = Player(Position(x,y), Position(x,y))
-i=0
-steps = solution.__len__()
+player = Player(Position(game.start.x, game.start.y), Position(game.start.x, game.start.y))
+game.isPlayerSplitted = False
 
 Box.draw_box(position=(player.p1.y, player.p1.x), size=(1,1,2))
 draw_maps()
 display.update()
 time.sleep(2)
 
-runningAuto = False
-while runningAuto:
+prev_split = 1
 
-    if player.isStanding():
-        size = (1,1,2)
-    elif player.isHorizontal():
-        size = (2,1,1)
-    else:
-        size = (1,2,1)
-    Box.draw_box(position=(player.p2.y, player.p2.x), size=size)
+runningAuto = True
+while runningAuto:
+    draw_player()
     draw_maps()
     display.update()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             runningAuto = False
+
     if i >= steps:
         continue
-    elif solution[i] == "Right":
-        player = player.Moves(2)
-    elif solution[i] == "Left":
-        player = player.Moves(1)
-    elif solution[i] == "Down":
-        player = player.Moves(4)
-    elif solution[i] == "Up":
-        player = player.Moves(3)
+
+    if solution[i][1] == ',':
+        if prev_split == 1:
+            switchSplit()
+            prev_split = 2
+    if solution[i][-2] == ',':
+        if prev_split == 2:
+            switchSplit()
+            prev_split = 1
+
+    if "Right" in solution[i]:
+        moveGame(2)
+        time.sleep(1)
+    elif "Left" in solution[i]:
+        moveGame(1)
+        time.sleep(1)
+    elif "Down" in solution[i]:
+        moveGame(4)
+        time.sleep(1)
+    elif "Up" in solution[i]:
+        moveGame(3)
+        time.sleep(1)
     i += 1
 
-    time.sleep(1)
+
+# runningPlay = True
+# while runningPlay:
+#     draw_player()
+#     draw_maps()
+#     display.update()
+
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             runningPlay = False
+#         if event.type == pygame.KEYDOWN:
+#             if event.key == pygame.K_LEFT:
+#                 moveGame(1)
+#             if event.key == pygame.K_RIGHT:
+#                 moveGame(2)
+#             if event.key == pygame.K_UP:
+#                 moveGame(3)
+#             if event.key == pygame.K_DOWN:
+#                 moveGame(4)
+#             if event.key == pygame.K_SPACE:
+#                 switchSplit()
+    
+#     if game.canHold(player, game.arr) == False:
+#         runningPlay = False
 
 
-runningPlay = True
-while runningPlay:
-    if player.isStanding():
-        size = (1,1,2)
-    elif player.isHorizontal():
-        size = (2,1,1)
-    else:
-        size = (1,2,1)
-    Box.draw_box(position=(player.p2.y, player.p2.x), size=size)
-    draw_maps()
-    display.update()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            runningPlay = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                player = player.Moves(1)
-            if event.key == pygame.K_RIGHT:
-                player = player.Moves(2)
-            if event.key == pygame.K_UP:
-                player = player.Moves(3)
-            if event.key == pygame.K_DOWN:
-                player = player.Moves(4)
+# print(player.p1.x, player.p1.y, player.p2.x, player.p2.y)

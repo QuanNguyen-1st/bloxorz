@@ -45,26 +45,26 @@ class Display:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glViewport(0, 0, self.surface.get_width(), self.surface.get_height())
 
-    @staticmethod
-    def quit(event):
-        ESCAPE = event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
-        QUIT = event.type == pygame.QUIT
-        SPACE = event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE
-        return ESCAPE or QUIT or SPACE
+    # @staticmethod
+    # def quit(event):
+    #     ESCAPE = event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+    #     QUIT = event.type == pygame.QUIT
+    #     SPACE = event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE
+    #     return ESCAPE or QUIT or SPACE
 
     @staticmethod
     def get_time():
         return time.time() * 1000
     
-    @staticmethod
-    def loadTexture():
-        textureSurface = pygame.image.load('./drawing/images.jpg')
-        textureData = pygame.image.tostring(textureSurface, "RGBA", 1)
-        width = textureSurface.get_width()
-        height = textureSurface.get_height()
+    # @staticmethod
+    # def loadTexture():
+    #     textureSurface = pygame.image.load('./drawing/images.jpg')
+    #     textureData = pygame.image.tostring(textureSurface, "RGBA", 1)
+    #     width = textureSurface.get_width()
+    #     height = textureSurface.get_height()
 
-        texid = glGenTextures(1)
-        glBindTexture(GL_TEXTURE_2D, texid)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData)
-        glEnable(GL_TEXTURE_2D)
+    #     texid = glGenTextures(1)
+    #     glBindTexture(GL_TEXTURE_2D, texid)
+    #     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+    #     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData)
+    #     glEnable(GL_TEXTURE_2D)
