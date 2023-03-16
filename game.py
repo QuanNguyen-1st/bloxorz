@@ -15,9 +15,11 @@ from drawing.color import colors
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+
 pygame.init()
-game = Map("level/28.txt")
-display = Display(title='Bloxorz Game', map_size=(game.height, game.width))
+game = Map("level/08.txt")
+display = Display(title='Bloxorz Game', map_size=(game.height+1, game.width+1))
+time_sleep = 0.5
 
 split1 = 1
 split2 = 0
@@ -33,6 +35,11 @@ def moveGame(i):
     global player
     if game.isPlayerSplitted:
         player = DetachedPlayer(player.p1.Move(i * split1), player.p2.Move(i * split2))
+        if split1 == 1:
+            temp_split = DetachedPlayer(player.p1, player.p1)
+        else:
+            temp_split = DetachedPlayer(player.p2, player.p2)
+        game.arr = game.newMapIfButtonPressed(temp_split, game.arr)
         temp = DetachedPlayer(player.p2, player.p1)
         if temp.hasAttached():
             game.isPlayerSplitted = False
@@ -85,6 +92,7 @@ bfs.solve()
 
 print("Time process: ", time.time() - start_time)
 winPath = bfs.winPath
+# winPath = "Down Left Down Right Down Left Up Up Right Up Up Left Left Left Left Down Down Right Up Left Left Down Down Down Left Down Up Right Up Up Right Up Up Right Right Right Down Left Down [\"[1, 13]\", \"[7, 13]\"] (Left,) (Left,) (Left,) (Left,) (,Left) (,Up) (Down,) (Down,) (Down,) (Down,) (,Down) (Down,) (Right,) (Right,) (Right,) Right Down"
 print(winPath)
 solution = list(winPath.split(" "))
 i=0
@@ -117,27 +125,27 @@ while runningAuto:
     if i >= steps:
         continue
 
-    if solution[i][1] == ',':
+    if solution[i].__len__() >= 1 and solution[i][1] == ',':
         if prev_split == 1:
             switchSplit()
             prev_split = 2
-    if solution[i][-2] == ',':
+    if solution[i].__len__() >= 1 and solution[i][-2] == ',':
         if prev_split == 2:
             switchSplit()
             prev_split = 1
 
     if "Right" in solution[i]:
         moveGame(2)
-        time.sleep(1)
+        time.sleep(time_sleep)
     elif "Left" in solution[i]:
         moveGame(1)
-        time.sleep(1)
+        time.sleep(time_sleep)
     elif "Down" in solution[i]:
         moveGame(4)
-        time.sleep(1)
+        time.sleep(time_sleep)
     elif "Up" in solution[i]:
         moveGame(3)
-        time.sleep(1)
+        time.sleep(time_sleep)
     i += 1
 
 
