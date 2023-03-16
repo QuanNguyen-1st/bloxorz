@@ -16,7 +16,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 
 pygame.init()
-game = Map("level/08.txt")
+game = Map("level/28.txt")
 display = Display(title='Bloxorz Game', map_size=(game.height, game.width))
 
 split1 = 1
