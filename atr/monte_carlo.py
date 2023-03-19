@@ -26,7 +26,7 @@ class MCTS:
         node.children.append(child_node)
         return child_node
     
-    def makeMoves(player: Player, arr, par_player: Player, par_arr):
+    def makeMoves(self, player: Player, arr, par_player: Player, par_arr):
         moves = self.map.allMoves(player, arr)
         return [(playerMove, move, newMap) for (playerMove, move, newMap) in moves if playerMove != par_player and newMap != par_arr]
 
