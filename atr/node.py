@@ -2,6 +2,8 @@ from atr.player import Player
 from atr.player import DetachedPlayer
 from atr.moves import Move
 from atr.position import Position
+import math
+from collections import defaultdict
 
 def printMapAsArr(arr: list):
     pass
@@ -46,9 +48,22 @@ class A_star_Node(Node):
         return self.f < __o.f
     
 class MC_Node(Node):
-    def __init__(self, arr: list, player: Player, move: str, parent, children: list[object]):
+    def __init__(self, arr: list, player: Player, move: str, parent):
         super().__init__(arr, player, move, parent)
-        self.children = children
+        self.N = 0
+        self.Q = 0
+        self.children = []
+        self._untried_actions = []
+
+    def is_fully_expanded(self):
+        return len(self._untried_actions) == 0
+
+    def value(self, c_param = 2):
+        if self.N == 0:
+            return float('inf')
+        else:
+            return self.Q/self.N + c_param*math.sqrt(math.log(self.parent.N) / self.N)
+
 
     # def isLoseState(self) -> bool:
     #     return not (self.arr[self.player.p1.x][self.player.p1.y] and self.arr[self.player.p2.x][self.player.p2.y])
