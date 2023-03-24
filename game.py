@@ -18,7 +18,7 @@ from OpenGL.GLU import *
 
 
 pygame.init()
-game = Map("level/01.txt")
+game = Map("level/02.txt")
 display = Display(title='Bloxorz Game', map_size=(game.height+1, game.width+1))
 time_sleep = 0.5
 

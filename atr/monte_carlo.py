@@ -36,16 +36,18 @@ class MCTS:
         expanded_and_rollout = copy.deepcopy(expanded)
         Player = node.player
         Map = node.arr
+        k = 0
         while not self.isTerminalState(Player, Map):
             # possible_moves = self.map.allMoves(Player, Map)
             possible_moves = self.makeMoves(Player, Map, expanded_and_rollout)
             if (len(possible_moves)) == 0:
                 return 0
+            k += 1
             (playerMove, move, newMap) = random.choice(possible_moves)
             expanded_and_rollout.append((playerMove, newMap))
             Player = playerMove
             Map = newMap
-        return 1 if self.isWinState(Player) else 0
+        return 4**k if self.isWinState(Player) else -4**k
 
     def back_propagate(self, node: MC_Node, result):
         node.N += 1.
@@ -75,7 +77,7 @@ class MCTS:
         return current_node
 
     def best_action(self, node: MC_Node, expanded: list):
-        simulation_no = 10000
+        simulation_no = 1000
 
         for i in range(simulation_no):
             v = self._tree_policy(node, expanded)
