@@ -91,6 +91,7 @@ start_time = time.time()
 #bfs = BFS(game)
 #bfs.solve()
 mcts = MCTS(game)
+mcts.solve()
 print("Time process: ", time.time() - start_time)
 winPath = mcts.winPath
 # winPath = "Down Left Down Right Down Left Up Up Right Up Up Left Left Left Left Down Down Right Up Left Left Down Down Down Left Down Up Right Up Up Right Up Up Right Right Right Down Left Down [\"[1, 13]\", \"[7, 13]\"] (Left,) (Left,) (Left,) (Left,) (,Left) (,Up) (Down,) (Down,) (Down,) (Down,) (,Down) (Down,) (Right,) (Right,) (Right,) Right Down"

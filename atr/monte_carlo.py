@@ -64,21 +64,21 @@ class MCTS:
         best_child = random.choice(max_nodes)
         return best_child
 
-    def _tree_policy(self, node: MC_Node):
+    def _tree_policy(self, node: MC_Node, expanded: list):
         current_node = node
         while not self.isTerminalState(node.player, node.arr):
             if not current_node.is_fully_expanded():
-                return self.expand(current_node)
+                return self.expand(current_node, expanded)
             else:
                 current_node = self.best_child(current_node)
         return current_node
 
-    def best_action(self, node: MC_Node):
-        simulation_no = 100
+    def best_action(self, node: MC_Node, expanded: list):
+        simulation_no = 1000
 
         for i in range(simulation_no):
-            v = self._tree_policy(node)
-            reward = self.rollout(v)
+            v = self._tree_policy(node, expanded)
+            reward = self.rollout(v, expanded)
             self.back_propagate(v, reward)
 
         curr_node = node
@@ -91,10 +91,10 @@ class MCTS:
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
         expanded.append((start_node.player, start_node.arr))
-        selected_node = self.best_action(start_node)
-        #if self.map.hasWon(selected_node.player):
-        self.winPath = selected_node.makePathTo()
-            #return
+        selected_node = self.best_action(start_node, expanded)
+        if self.map.hasWon(selected_node.player):
+            self.winPath = selected_node.makePathTo()
+            return
 
 
 
