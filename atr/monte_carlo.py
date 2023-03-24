@@ -29,23 +29,20 @@ class MCTS:
         return child_node
     
     def makeMoves(self, player: Player, arr: list, expanded: list):
-        moves = self.map.allMoves(player, arr)
+        moves = self.map.legalMoves(player, arr)
         return [(playerMove, move, newMap) for (playerMove, move, newMap) in moves if (playerMove, newMap) not in expanded]
 
     def rollout(self, node: MC_Node, expanded: list):
         expanded_and_rollout = copy.deepcopy(expanded)
-        par_player = node.parent.player
-        par_arr = node.parent.arr
         Player = node.player
         Map = node.arr
         while not self.isTerminalState(Player, Map):
             # possible_moves = self.map.allMoves(Player, Map)
             possible_moves = self.makeMoves(Player, Map, expanded_and_rollout)
+            if (len(possible_moves)) == 0:
+                return 0
             (playerMove, move, newMap) = random.choice(possible_moves)
             expanded_and_rollout.append((playerMove, newMap))
-            par_player = Player
-            par_arr = Map
-            
             Player = playerMove
             Map = newMap
         return 1 if self.isWinState(Player) else 0
@@ -69,8 +66,10 @@ class MCTS:
         while not self.isTerminalState(node.player, node.arr):
             if not current_node.is_fully_expanded():
                 return self.expand(current_node, expanded)
-            else:
+            elif len(current_node.children) != 0:
                 current_node = self.best_child(current_node)
+            else:
+                break
         return current_node
 
     def best_action(self, node: MC_Node, expanded: list):
@@ -78,6 +77,7 @@ class MCTS:
 
         for i in range(simulation_no):
             v = self._tree_policy(node, expanded)
+            print(v.makePathTo())
             reward = self.rollout(v, expanded)
             self.back_propagate(v, reward)
 
@@ -92,9 +92,9 @@ class MCTS:
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
         expanded.append((start_node.player, start_node.arr))
         selected_node = self.best_action(start_node, expanded)
-        if self.map.hasWon(selected_node.player):
-            self.winPath = selected_node.makePathTo()
-            return
+        #if self.map.hasWon(selected_node.player):
+        self.winPath = selected_node.makePathTo()
+            #return
 
 
 
