@@ -54,6 +54,7 @@ class MCTS:
             self.back_propagate(node.parent, result)
 
     def best_child(self, node: MC_Node):
+        print(node.makePathTo())
         max_value = node.children[0].value()
         for child in node.children:
             max_value = max(child.value(), max_value)
@@ -67,17 +68,18 @@ class MCTS:
             if not current_node.is_fully_expanded():
                 return self.expand(current_node, expanded)
             elif len(current_node.children) != 0:
+                print(current_node.makePathTo())
                 current_node = self.best_child(current_node)
             else:
                 break
         return current_node
 
     def best_action(self, node: MC_Node, expanded: list):
-        simulation_no = 1000
+        simulation_no = 10000
 
         for i in range(simulation_no):
             v = self._tree_policy(node, expanded)
-            print(v.makePathTo())
+            #print(v.makePathTo())
             reward = self.rollout(v, expanded)
             self.back_propagate(v, reward)
 
