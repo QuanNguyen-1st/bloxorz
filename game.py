@@ -4,6 +4,7 @@ from atr.player import DetachedPlayer
 from atr.position import Position
 from atr.bfs import BFS
 from atr.astar import AStar
+from atr.monte_carlo import MCTS
 import atr.button as bt
 import pygame
 import sys
@@ -87,11 +88,11 @@ def draw_maps():
 
 start_time = time.time()
 
-bfs = BFS(game)
-bfs.solve()
-
+#bfs = BFS(game)
+#bfs.solve()
+mcts = MCTS(game)
 print("Time process: ", time.time() - start_time)
-winPath = bfs.winPath
+winPath = mcts.winPath
 # winPath = "Down Left Down Right Down Left Up Up Right Up Up Left Left Left Left Down Down Right Up Left Left Down Down Down Left Down Up Right Up Up Right Up Up Right Right Right Down Left Down [\"[1, 13]\", \"[7, 13]\"] (Left,) (Left,) (Left,) (Left,) (,Left) (,Up) (Down,) (Down,) (Down,) (Down,) (,Down) (Down,) (Right,) (Right,) (Right,) Right Down"
 print(winPath)
 solution = list(winPath.split(" "))

@@ -3,6 +3,7 @@ from atr.player import Player
 from atr.map import Map
 import math
 import random
+import copy
 import numpy as np
 
 class MCTS:
@@ -19,27 +20,29 @@ class MCTS:
     def isTerminalState(self, player: Player, arr: list):
         return self.isWinState(player) or self.isLoseState(player, arr)
 
-    def expand(self, node: MC_Node):
+    def expand(self, node: MC_Node, expanded: list):
         (playerMove, move, newMap) = node._untried_actions.pop()
         child_node = MC_Node(newMap, playerMove, move, node)
-        child_node._untried_actions = self.map.allMoves(playerMove, newMap)
+        child_node._untried_actions = self.makeMoves(playerMove, newMap, expanded)
         node.children.append(child_node)
+        expanded.append((playerMove, newMap))
         return child_node
     
-    def makeMoves(self, player: Player, arr, par_player: Player, par_arr):
+    def makeMoves(self, player: Player, arr: list, expanded: list):
         moves = self.map.allMoves(player, arr)
-        return [(playerMove, move, newMap) for (playerMove, move, newMap) in moves if playerMove != par_player and newMap != par_arr]
+        return [(playerMove, move, newMap) for (playerMove, move, newMap) in moves if (playerMove, newMap) not in expanded]
 
-    def rollout(self, node: MC_Node):
+    def rollout(self, node: MC_Node, expanded: list):
+        expanded_and_rollout = copy.deepcopy(expanded)
         par_player = node.parent.player
         par_arr = node.parent.arr
         Player = node.player
         Map = node.arr
         while not self.isTerminalState(Player, Map):
             # possible_moves = self.map.allMoves(Player, Map)
-            possible_moves = self.makeMoves(Player, Map, par_player, par_arr)
+            possible_moves = self.makeMoves(Player, Map, expanded_and_rollout)
             (playerMove, move, newMap) = random.choice(possible_moves)
-            
+            expanded_and_rollout.append((playerMove, newMap))
             par_player = Player
             par_arr = Map
             
@@ -84,8 +87,10 @@ class MCTS:
         return curr_node
 
     def solve(self):
+        expanded = []
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
+        expanded.append((start_node.player, start_node.arr))
         selected_node = self.best_action(start_node)
         #if self.map.hasWon(selected_node.player):
         self.winPath = selected_node.makePathTo()
