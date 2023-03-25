@@ -11,6 +11,9 @@ class MCTS:
     def __init__(self, map: Map):
         self.map = map
 
+    def reward(self, map: Map):
+        return (map.width*map.height)**2
+
     def isWinState(self, player: Player):
         return player.isStanding() and player.p1 == self.map.goal
 
@@ -36,18 +39,16 @@ class MCTS:
         expanded_and_rollout = copy.deepcopy(expanded)
         Player = node.player
         Map = node.arr
-        k = 0
         while not self.isTerminalState(Player, Map):
             # possible_moves = self.map.allMoves(Player, Map)
             possible_moves = self.makeMoves(Player, Map, expanded_and_rollout)
             if (len(possible_moves)) == 0:
                 return 0
-            k += 1
             (playerMove, move, newMap) = random.choice(possible_moves)
             expanded_and_rollout.append((playerMove, newMap))
             Player = playerMove
             Map = newMap
-        return 4**k if self.isWinState(Player) else -4**k
+        return self.reward(self.map) if self.isWinState(Player) else -1
 
     def back_propagate(self, node: MC_Node, result):
         node.N += 1.
@@ -56,7 +57,6 @@ class MCTS:
             self.back_propagate(node.parent, result)
 
     def best_child(self, node: MC_Node):
-        print(node.makePathTo())
         max_value = node.children[0].value()
         for child in node.children:
             max_value = max(child.value(), max_value)
@@ -70,7 +70,6 @@ class MCTS:
             if not current_node.is_fully_expanded():
                 return self.expand(current_node, expanded)
             elif len(current_node.children) != 0:
-                print(current_node.makePathTo())
                 current_node = self.best_child(current_node)
             else:
                 break
@@ -81,7 +80,6 @@ class MCTS:
 
         for i in range(simulation_no):
             v = self._tree_policy(node, expanded)
-            #print(v.makePathTo())
             reward = self.rollout(v, expanded)
             self.back_propagate(v, reward)
 
@@ -96,9 +94,9 @@ class MCTS:
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
         expanded.append((start_node.player, start_node.arr))
         selected_node = self.best_action(start_node, expanded)
-        #if self.map.hasWon(selected_node.player):
-        self.winPath = selected_node.makePathTo()
-            #return
+        if self.map.hasWon(selected_node.player):
+            self.winPath = selected_node.makePathTo()
+            return
 
 
 
