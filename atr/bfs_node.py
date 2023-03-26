@@ -22,8 +22,8 @@ class Node:
             par = par.parent
         return string
     
-    def __str__(self) -> str:
-        return str(self.player) 
+    # def __str__(self) -> str:
+    #     return str(self.player) 
 
 class BFS_Node(Node):
     def __init__(self, arr: list, player: Player, move: str, parent):
