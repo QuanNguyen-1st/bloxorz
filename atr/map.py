@@ -67,7 +67,7 @@ class Map:
             button = Tiles().isNumberEight(num)
             self.buttons.append(button)
 
-    def hasWon(self, player: Player):
+    def hasWon(self, player: Player) -> bool:
         return player.isStanding() and player.p1.x == self.goal.x and player.p1.y == self.goal.y
     
     def cannotHoldWeak(self, player: Player) -> bool:    
