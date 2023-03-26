@@ -17,6 +17,13 @@ from drawing.color import colors
 from OpenGL.GL import *
 from OpenGL.GLU import *
 
+def count_steps(path):
+    count = 0
+    for step in path:
+        if "Up" in step or "Down" in step or "Left" in step or "Right" in step:
+            count += 1
+    return count
+
 class Game:
     def __init__(self, level):
         temp_str = "level/" + level + ".txt" 
@@ -94,7 +101,6 @@ class Game:
             game_to_solve = MCTS(self.game)
             game_to_solve.solve()
 
-
         print("Time process: ", time.time() - start_time)
         print("Total node explored:", game_to_solve.VNode_count)
         self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
@@ -102,12 +108,12 @@ class Game:
 
         winPath = game_to_solve.winPath
         self.solution = list(winPath.split(" "))
-        self.steps = self.solution.__len__()
+        self.solution_len = self.solution.__len__()
 
         if (algorithm == Algorithm.MCTS and game_to_solve.can_find_win_path == False):
             print("Haven't found win path, best path so far is:", winPath)
         else:
-            print("Total steps:", self.steps)
+            print("Total steps:", count_steps(self.solution))
             print("The detail steps:", winPath)
 
     def setup(self):
@@ -136,7 +142,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     runningAI = False
 
-            if i >= self.steps:
+            if i >= self.solution_len:
                 continue
 
             if self.solution[i].__len__() >= 1 and self.solution[i][1] == ',':
