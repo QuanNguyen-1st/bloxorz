@@ -76,7 +76,7 @@ class MCTS:
         return current_node
 
     def best_action(self, node: MC_Node, expanded: list):
-        simulation_no = 1000
+        simulation_no = 4000
 
         for i in range(simulation_no):
             v = self._tree_policy(node, expanded)
@@ -85,7 +85,10 @@ class MCTS:
 
         curr_node = node
         while not self.isTerminalState(curr_node.player, node.arr):
-            curr_node = self.best_child(curr_node)
+            if len(curr_node.children) != 0:
+                curr_node = self.best_child(curr_node)
+            else:
+                break
         return curr_node
 
     def solve(self):
