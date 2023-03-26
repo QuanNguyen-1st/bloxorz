@@ -1,14 +1,19 @@
 from atr.node import BFS_Node
-from atr.player import Player
+from atr.player import *
 from atr.map import Map
 
 class BFS:
     winPath = ""
+    VNode_count = 0
     def __init__(self, map: Map):
         self.map = map
     
     def makeChildren(self, node: BFS_Node, visited: list, arr: list) -> list:
         children = []
+        if isinstance(node.player, "DetachedPlayer"):
+            self.VNode_count += 8
+        else:
+            self.VNode_count += 4
         for (playerMove, move, newMap) in self.map.legalMoves(node.player, arr):
             newNode = BFS_Node(newMap, playerMove, move, node)
             if newNode in visited:
