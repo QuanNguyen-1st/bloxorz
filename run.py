@@ -1,6 +1,7 @@
 import sys
 from enum import Enum
 from game import Game
+import os, psutil
 
 class Algorithm(Enum):
     NONE = 0,

@@ -8,7 +8,7 @@ from atr.monte_carlo import MCTS
 import atr.button as bt
 import pygame
 import sys
-import os
+import os, psutil
 import time
 from drawing.display import Display
 from drawing.box import Box
@@ -93,31 +93,55 @@ class Game:
         start_time = time.time()
         bfs = BFS(self.game)
         bfs.solve()
+
         print("Time process: ", time.time() - start_time)
+        process = psutil.Process(os.getpid())
+        print("Total node explored:", bfs.VNode_count)
+        print("Memory used:", process.memory_info().rss / 1024 / 1024, "MB")  # in megabytes 
+
         winPath = bfs.winPath
-        print(winPath)
         self.solution = list(winPath.split(" "))
         self.steps = self.solution.__len__()
+
+        print("Total steps:", self.steps)
+        print("The detail steps:", winPath)
 
     def solveAStar(self):
         start_time = time.time()
         astar = AStar(self.game)
         astar.solve()
+
         print("Time process: ", time.time() - start_time)
+        process = psutil.Process(os.getpid())
+        print("Total node explored:", astar.VNode_count)
+        print("Memory used:", process.memory_info().rss / 1024 / 1024, "MB")  # in megabytes 
+
         winPath = astar.winPath
-        print(astar.winPath)
         self.solution = list(winPath.split(" "))
         self.steps = self.solution.__len__()
+
+        print("Total steps:", self.steps)
+        print("The detail steps:", winPath)
 
     def solveMCTS(self):
         start_time = time.time()
         mcts = MCTS(self.game)
         mcts.solve()
+
         print("Time process: ", time.time() - start_time)
+        process = psutil.Process(os.getpid())
+        print("Total node explored:", mcts.VNode_count)
+        print("Memory used:", process.memory_info().rss / 1024 / 1024, "MB")  # in megabytes 
+
         winPath = mcts.winPath
-        print(mcts.winPath)
         self.solution = list(winPath.split(" "))
         self.steps = self.solution.__len__()
+        
+        if (self.steps == 0):
+            print("Cannot solve")
+        else:
+            print("Total steps:", self.steps)
+            print("The detail steps:", winPath)
 
     def setup(self):
         Box.draw_box(position=(self.player.p1.y, self.player.p1.x), size=(1,1,2))

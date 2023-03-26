@@ -38,7 +38,7 @@ class Box:
     ])
 
     @staticmethod
-    def draw_box(position, size, face_color=(0.2470588235294118, 0.2823529411764706, 0.8), border_color=(0.8, 0.8, 0.8)):
+    def draw_box(position, size, face_color=(1, 114/255, 114/255), border_color=(0.8, 0.8, 0.8)):
         Box.draw_border(position, size, border_color)
         Box.draw_faces(position, size, face_color)
 
