@@ -2,7 +2,6 @@
 - pygame
 - PyOpenGL
 - numpy
-- json
 
 Người dùng có thể tự cài đặt các thư viện trên, hoặc đơn giản hơn có thể dùng dòng lệnh này trên Command Line
 ```
