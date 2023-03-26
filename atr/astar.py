@@ -22,7 +22,7 @@ class AStar:
     
     def makeChildren(self, node: A_star_Node, arr: list) -> list:
         children = []
-        if isinstance(node.player, "DetachedPlayer"):
+        if isinstance(node.player, DetachedPlayer):
             self.VNode_count += 8
         else:
             self.VNode_count += 4

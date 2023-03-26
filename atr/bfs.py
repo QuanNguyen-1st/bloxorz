@@ -10,7 +10,7 @@ class BFS:
     
     def makeChildren(self, node: BFS_Node, visited: list, arr: list) -> list:
         children = []
-        if isinstance(node.player, "DetachedPlayer"):
+        if isinstance(node.player, DetachedPlayer):
             self.VNode_count += 8
         else:
             self.VNode_count += 4
