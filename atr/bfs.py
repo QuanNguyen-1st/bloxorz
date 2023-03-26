@@ -17,6 +17,7 @@ class BFS:
         for (playerMove, move, newMap) in self.map.legalMoves(node.player, arr):
             newNode = BFS_Node(newMap, playerMove, move, node)
             if newNode in visited:
+                del newNode
                 continue
             children.append(newNode)
         self.VNode_count += len(children)

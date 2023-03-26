@@ -32,7 +32,7 @@ class AStar:
             elif self.h_func == "Euclidean":
                 h_child = self.eucDistance(playerMove)
             children.append(A_star_Node(newMap, playerMove, move, node, node.g + 1, h_child))
-        self.VNode_count += len(children)
+        # self.VNode_count += len(children)
         return children
     
     def inClosed_list(self, newNode: A_star_Node, closed_list: list):
@@ -72,7 +72,10 @@ class AStar:
             children = self.makeChildren(node, node.arr)
             for child in children:
                 if self.inClosed_list(child, closed_list):
+                    del child
                     continue
                 if self.inOpen_list(child, open_list):
+                    del child
                     continue
                 open_list.append(child)
+                self.VNode_count += 1
