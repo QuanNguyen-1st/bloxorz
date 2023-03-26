@@ -5,6 +5,7 @@ from atr.position import Position
 from atr.bfs import BFS
 from atr.astar import AStar
 from atr.monte_carlo import MCTS
+from atr.algorithm import Algorithm
 import atr.button as bt
 import pygame
 import sys
@@ -78,65 +79,32 @@ class Game:
                 elif self.game.arr[x][y]:
                     Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['gray'])
 
-    def solveBFS(self):
+    def solve_with_algorithm(self, algorithm):
         process = psutil.Process(os.getpid())
         temp_memory = process.memory_info().rss / 1024 / 1024
         start_time = time.time()
 
-        bfs = BFS(self.game)
-        bfs.solve()
+        if (algorithm == Algorithm.BFS):
+            game_to_solve = BFS(self.game)
+            game_to_solve.solve()
+        elif (algorithm == Algorithm.ASTAR):
+            game_to_solve = AStar(self.game)
+            game_to_solve.solve()
+        elif (algorithm == Algorithm.MCTS):
+            game_to_solve = MCTS(self.game)
+            game_to_solve.solve()
+
 
         print("Time process: ", time.time() - start_time)
-        print("Total node explored:", bfs.VNode_count)
+        print("Total node explored:", game_to_solve.VNode_count)
         self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
         print("Memory used to solve:", self.memory, "MB")
 
-        winPath = bfs.winPath
+        winPath = game_to_solve.winPath
         self.solution = list(winPath.split(" "))
         self.steps = self.solution.__len__()
 
-        print("Total steps:", self.steps)
-        print("The detail steps:", winPath)
-
-    def solveAStar(self):
-        process = psutil.Process(os.getpid())
-        temp_memory = process.memory_info().rss / 1024 / 1024
-        start_time = time.time()
-
-        astar = AStar(self.game)
-        astar.solve()
-
-        print("Time process: ", time.time() - start_time)
-        print("Total node explored:", astar.VNode_count)
-        self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
-        print("Memory used to solve:", self.memory, "MB")
-
-        winPath = astar.winPath
-        self.solution = list(winPath.split(" "))
-        self.steps = self.solution.__len__()
-
-        print("Total steps:", self.steps)
-        print("The detail steps:", winPath)
-
-    def solveMCTS(self):
-        process = psutil.Process(os.getpid())
-        temp_memory = process.memory_info().rss / 1024 / 1024
-        start_time = time.time()
-    
-        mcts = MCTS(self.game)
-        mcts.solve()
-
-        print("Time process: ", time.time() - start_time)
-        process = psutil.Process(os.getpid())
-        print("Total node explored:", mcts.VNode_count)
-        self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
-        print("Memory used to solve:", self.memory, "MB")
-
-        winPath = mcts.winPath
-        self.solution = list(winPath.split(" "))
-        self.steps = self.solution.__len__()
-        
-        if (mcts.can_find_win_path == False):
+        if (algorithm == Algorithm.MCTS and game_to_solve.can_find_win_path == False):
             print("Haven't found win path, best path so far is:", winPath)
         else:
             print("Total steps:", self.steps)

@@ -1,13 +1,7 @@
 import sys
-from enum import Enum
+from atr.algorithm import Algorithm
 from game import Game
 import os, psutil
-
-class Algorithm(Enum):
-    NONE = 0,
-    BFS = 1,
-    ASTAR = 2,
-    MCTS = 3
 
 def main(level, algorithm):
     game = Game(level)
@@ -16,15 +10,15 @@ def main(level, algorithm):
         game.runningPlay()
     else:
         if algorithm == Algorithm.BFS:
-            game.solveBFS()
+            game.solve_with_algorithm(Algorithm.BFS)
             game.setup()
             game.runningAI()
         elif algorithm == Algorithm.ASTAR:
-            game.solveAStar()
+            game.solve_with_algorithm(Algorithm.ASTAR)
             game.setup()
             game.runningAI()
         elif algorithm == Algorithm.MCTS:
-            game.solveMCTS()
+            game.solve_with_algorithm(Algorithm.MCTS)
             game.setup()
             game.runningAI()
 
