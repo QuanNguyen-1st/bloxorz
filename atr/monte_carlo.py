@@ -9,6 +9,7 @@ import numpy as np
 class MCTS:
     winPath = ""
     VNode_count = 1
+    can_find_win_path = True
     def __init__(self, map: Map):
         self.map = map
 
@@ -99,7 +100,8 @@ class MCTS:
         selected_node = self.best_action(start_node, expanded, simulation_no)
         self.VNode_count = len(expanded)
         if not self.map.hasWon(selected_node.player):
-            print("Haven't found win path, best path so far is: ")
+            self.can_find_win_path = False
+            # print("Haven't found win path, best path so far is: ")
         self.winPath = selected_node.makePathTo()
 
 

@@ -18,19 +18,8 @@ from OpenGL.GLU import *
 
 class Game:
     def __init__(self, level):
-        pygame.init()
         temp_str = "level/" + level + ".txt" 
         self.game = Map(temp_str)
-        self.display = Display(title='Bloxorz Game', map_size=(self.game.height+1, self.game.width+1))
-        self.time_sleep = 0.5
-        self.player = Player(Position(self.game.start.x, self.game.start.y), Position(self.game.start.x, self.game.start.y))
-        
-        self.prev_split = 1
-        self.split1 = 1
-        self.split2 = 0
-        self.solution = []
-        self.steps = 0
-
 
     def switchSplit(self):
         temp = self.split1
@@ -90,14 +79,17 @@ class Game:
                     Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['gray'])
 
     def solveBFS(self):
+        process = psutil.Process(os.getpid())
+        temp_memory = process.memory_info().rss / 1024 / 1024
         start_time = time.time()
+
         bfs = BFS(self.game)
         bfs.solve()
 
         print("Time process: ", time.time() - start_time)
-        process = psutil.Process(os.getpid())
         print("Total node explored:", bfs.VNode_count)
-        print("Memory used:", process.memory_info().rss / 1024 / 1024, "MB")  # in megabytes 
+        self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
+        print("Memory used to solve:", self.memory, "MB")
 
         winPath = bfs.winPath
         self.solution = list(winPath.split(" "))
@@ -107,14 +99,17 @@ class Game:
         print("The detail steps:", winPath)
 
     def solveAStar(self):
+        process = psutil.Process(os.getpid())
+        temp_memory = process.memory_info().rss / 1024 / 1024
         start_time = time.time()
+
         astar = AStar(self.game)
         astar.solve()
 
         print("Time process: ", time.time() - start_time)
-        process = psutil.Process(os.getpid())
         print("Total node explored:", astar.VNode_count)
-        print("Memory used:", process.memory_info().rss / 1024 / 1024, "MB")  # in megabytes 
+        self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
+        print("Memory used to solve:", self.memory, "MB")
 
         winPath = astar.winPath
         self.solution = list(winPath.split(" "))
@@ -124,28 +119,39 @@ class Game:
         print("The detail steps:", winPath)
 
     def solveMCTS(self):
+        process = psutil.Process(os.getpid())
+        temp_memory = process.memory_info().rss / 1024 / 1024
         start_time = time.time()
+    
         mcts = MCTS(self.game)
         mcts.solve()
 
         print("Time process: ", time.time() - start_time)
         process = psutil.Process(os.getpid())
         print("Total node explored:", mcts.VNode_count)
-        print("Memory used:", process.memory_info().rss / 1024 / 1024, "MB")  # in megabytes 
+        self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
+        print("Memory used to solve:", self.memory, "MB")
 
         winPath = mcts.winPath
         self.solution = list(winPath.split(" "))
         self.steps = self.solution.__len__()
         
-        if (self.steps == 0):
-            print("Cannot solve")
+        if (mcts.can_find_win_path == False):
+            print("Haven't found win path, best path so far is:", winPath)
         else:
             print("Total steps:", self.steps)
             print("The detail steps:", winPath)
 
     def setup(self):
-        Box.draw_box(position=(self.player.p1.y, self.player.p1.x), size=(1,1,2))
+        pygame.init()
+        self.display = Display(title='Bloxorz Game', map_size=(self.game.height+1, self.game.width+1))
+        self.time_sleep = 0.5
+        self.player = Player(Position(self.game.start.x, self.game.start.y), Position(self.game.start.x, self.game.start.y))
+        self.prev_split = 1
+        self.split1 = 1
+        self.split2 = 0
         self.game.isPlayerSplitted = False
+        Box.draw_box(position=(self.player.p1.y, self.player.p1.x), size=(1,1,2))
         self.draw_maps()
         self.display.update()
         time.sleep(2)
