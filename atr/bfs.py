@@ -4,7 +4,7 @@ from atr.map import Map
 
 class BFS:
     winPath = ""
-    VNode_count = 0
+    VNode_count = 1
     def __init__(self, map: Map):
         self.map = map
     

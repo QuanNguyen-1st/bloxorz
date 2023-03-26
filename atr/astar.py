@@ -4,7 +4,7 @@ from atr.map import Map
 
 class AStar:
     winPath = []
-    VNode_count = 0
+    VNode_count = 1
     heuristic_func = ["Chebyshev", "Euclidean"]
     def __init__(self, map: Map, h_func = "Chebyshev"):
         assert h_func in self.heuristic_func
