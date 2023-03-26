@@ -16,23 +16,17 @@ def main(level, algorithm):
         game.runningPlay()
     else:
         if algorithm == Algorithm.BFS:
-            pass
             game.solveBFS()
             game.setup()
             game.runningAI()
         elif algorithm == Algorithm.ASTAR:
-            pass
             game.solveAStar()
             game.setup()
             game.runningAI()
         elif algorithm == Algorithm.MCTS:
-            pass
             game.solveMCTS()
             game.setup()
             game.runningAI()
-    process = psutil.Process(os.getpid())
-    memory_to_draw = process.memory_info().rss / 1024 / 1024 - game.memory
-    print("Memory used to draw pygame:", memory_to_draw, "MB")
 
 
 if __name__== "__main__":

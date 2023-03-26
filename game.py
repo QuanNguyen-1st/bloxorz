@@ -79,15 +79,17 @@ class Game:
                     Box.draw_box(position=(y, x), size=(1, 1, -0.3), face_color=colors['gray'])
 
     def solveBFS(self):
+        process = psutil.Process(os.getpid())
+        temp_memory = process.memory_info().rss / 1024 / 1024
         start_time = time.time()
+
         bfs = BFS(self.game)
         bfs.solve()
 
         print("Time process: ", time.time() - start_time)
-        process = psutil.Process(os.getpid())
         print("Total node explored:", bfs.VNode_count)
-        self.memory = process.memory_info().rss / 1024 / 1024
-        print("Memory used to solve:", self.memory, "MB")  # in megabytes 
+        self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
+        print("Memory used to solve:", self.memory, "MB")
 
         winPath = bfs.winPath
         self.solution = list(winPath.split(" "))
@@ -97,15 +99,17 @@ class Game:
         print("The detail steps:", winPath)
 
     def solveAStar(self):
+        process = psutil.Process(os.getpid())
+        temp_memory = process.memory_info().rss / 1024 / 1024
         start_time = time.time()
+
         astar = AStar(self.game)
         astar.solve()
 
         print("Time process: ", time.time() - start_time)
-        process = psutil.Process(os.getpid())
         print("Total node explored:", astar.VNode_count)
-        self.memory = process.memory_info().rss / 1024 / 1024
-        print("Memory used to solve:", self.memory, "MB")  # in megabytes 
+        self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
+        print("Memory used to solve:", self.memory, "MB")
 
         winPath = astar.winPath
         self.solution = list(winPath.split(" "))
@@ -115,15 +119,18 @@ class Game:
         print("The detail steps:", winPath)
 
     def solveMCTS(self):
+        process = psutil.Process(os.getpid())
+        temp_memory = process.memory_info().rss / 1024 / 1024
         start_time = time.time()
+    
         mcts = MCTS(self.game)
         mcts.solve()
 
         print("Time process: ", time.time() - start_time)
         process = psutil.Process(os.getpid())
         print("Total node explored:", mcts.VNode_count)
-        self.memory = process.memory_info().rss / 1024 / 1024
-        print("Memory used to solve:", self.memory, "MB")  # in megabytes 
+        self.memory = process.memory_info().rss / 1024 / 1024 - temp_memory
+        print("Memory used to solve:", self.memory, "MB")
 
         winPath = mcts.winPath
         self.solution = list(winPath.split(" "))
