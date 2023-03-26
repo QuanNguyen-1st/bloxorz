@@ -1,9 +1,10 @@
 from atr.node import A_star_Node
-from atr.player import Player
+from atr.player import *
 from atr.map import Map
 
 class AStar:
     winPath = []
+    VNode_count = 1
     heuristic_func = ["Chebyshev", "Euclidean"]
     def __init__(self, map: Map, h_func = "Chebyshev"):
         assert h_func in self.heuristic_func
@@ -21,12 +22,17 @@ class AStar:
     
     def makeChildren(self, node: A_star_Node, arr: list) -> list:
         children = []
+        # if isinstance(node.player, DetachedPlayer):
+        #     self.VNode_count += 8
+        # else:
+        #     self.VNode_count += 4
         for (playerMove, move, newMap) in self.map.legalMoves(node.player, arr):
             if self.h_func == "Chebyshev":
                 h_child = self.chebDistance(playerMove)
             elif self.h_func == "Euclidean":
                 h_child = self.eucDistance(playerMove)
             children.append(A_star_Node(newMap, playerMove, move, node, node.g + 1, h_child))
+        self.VNode_count += len(children)
         return children
     
     def inClosed_list(self, newNode: A_star_Node, closed_list: list):
