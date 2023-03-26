@@ -28,8 +28,8 @@ print(virtual_steps)
 
 data = {
     'level':levels,
-    'time':time,
-    'memory':memory,
+    'time(s)':time,
+    'memory(mb)':memory,
     'steps':steps,
     'virtual_steps':virtual_steps
 }
