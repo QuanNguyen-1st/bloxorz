@@ -54,6 +54,7 @@ class MC_Node(Node):
         self.Q = 0
         self.children = []
         self._untried_actions = []
+        self.ancestor = []
         par = self.parent
         while par:
             self.ancestor.append(par)

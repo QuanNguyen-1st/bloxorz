@@ -15,7 +15,7 @@ for i in range (1, 34):
         level = "0" + level
     # cmd = string + " " + level + " " + algorithm
     x = subprocess.check_output(['python', 'testrun.py', level, algorithm])
-    holder ,time_run, memory_run, steps_run, virtual_steps_run = x.decode().split(' ')
+    holder, time_run, memory_run, steps_run, virtual_steps_run = x.decode().split(' ')
     # print(float(time_run))
     # print(float(memory_run))
     levels.append(level)
