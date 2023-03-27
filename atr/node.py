@@ -54,11 +54,7 @@ class MC_Node(Node):
         self.Q = 0
         self.children = []
         self._untried_actions = []
-        self.ancestor = []
-        par = self.parent
-        while par:
-            self.ancestor.append(par)
-            par = par.parent
+        self.level = self.parent + 1
 
     def is_fully_expanded(self):
         return len(self._untried_actions) == 0
