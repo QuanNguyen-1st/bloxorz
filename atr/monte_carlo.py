@@ -13,9 +13,6 @@ class MCTS:
     def __init__(self, map: Map):
         self.map = map
 
-    def reward(self, map: Map):
-        return (map.width*map.height)**2
-
     def isWinState(self, player: Player):
         return player.isStanding() and player.p1 == self.map.goal
 
@@ -41,8 +38,10 @@ class MCTS:
         expanded_and_rollout = copy.deepcopy(expanded)
         Player = node.player
         Map = node.arr
-        while not self.isTerminalState(Player, Map):
+        count = 0
+        while not self.isTerminalState(Player, Map) and count <= 1000:
             # possible_moves = self.map.allMoves(Player, Map)
+            count += 1
             possible_moves = self.makeMoves(Player, Map, expanded_and_rollout)
             if (len(possible_moves)) == 0:
                 return 0
@@ -50,7 +49,7 @@ class MCTS:
             expanded_and_rollout.append((playerMove, newMap))
             Player = playerMove
             Map = newMap
-        return self.reward(self.map) if self.isWinState(Player) else -1
+        return 1 if self.isWinState(Player) else 0
 
     def back_propagate(self, node: MC_Node, result):
         node.N += 1.
@@ -92,7 +91,7 @@ class MCTS:
                 break
         return curr_node
 
-    def solve(self, simulation_no = 4000):
+    def solve(self, simulation_no = 10000):
         expanded = []
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
