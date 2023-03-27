@@ -13,6 +13,9 @@ class MCTS:
     def __init__(self, map: Map):
         self.map = map
 
+    def reward(self):
+        return 1
+
     def isWinState(self, player: Player):
         return player.isStanding() and player.p1 == self.map.goal
 
@@ -31,7 +34,7 @@ class MCTS:
         return child_node
     
     def makeMoves(self, player: Player, arr: list, expanded: list):
-        moves = self.map.legalMoves(player, arr)
+        moves = self.map.allMoves(player, arr)
         return [(playerMove, move, newMap) for (playerMove, move, newMap) in moves if (playerMove, newMap) not in expanded]
 
     def rollout(self, node: MC_Node, expanded: list):
@@ -42,13 +45,14 @@ class MCTS:
         while not self.isTerminalState(Player, Map) and count <= 100:
             # possible_moves = self.map.allMoves(Player, Map)
             possible_moves = self.makeMoves(Player, Map, expanded_and_rollout)
+            count += 1
             if (len(possible_moves)) == 0:
-                return -1
+                return 0
             (playerMove, move, newMap) = random.choice(possible_moves)
             expanded_and_rollout.append((playerMove, newMap))
             Player = playerMove
             Map = newMap
-        return self.reward(self.map) if self.isWinState(Player) else -1
+        return self.reward() if self.isWinState(Player) else -1
 
     def back_propagate(self, node: MC_Node, result):
         node.N += 1.
@@ -57,6 +61,9 @@ class MCTS:
             self.back_propagate(node.parent, result)
 
     def best_child(self, node: MC_Node):
+        for child in node.children:
+            if self.isWinState(child.player):
+                return child
         max_value = node.children[0].value()
         for child in node.children:
             max_value = max(child.value(), max_value)
@@ -90,7 +97,7 @@ class MCTS:
                 break
         return curr_node
 
-    def solve(self, simulation_no = 4000):
+    def solve(self, simulation_no = 1000):
         expanded = []
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)

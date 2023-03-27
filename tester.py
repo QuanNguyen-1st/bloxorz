@@ -3,7 +3,7 @@ import pandas as pd
 import subprocess
 import time
 
-algorithm = "astar"
+algorithm = "mcts"
 levels = []
 time = []
 memory = []
