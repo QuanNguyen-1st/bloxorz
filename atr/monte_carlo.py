@@ -26,8 +26,10 @@ class MCTS:
         return self.isWinState(player) or self.isLoseState(player, arr)
 
     def expand(self, node: MC_Node, expanded: list):
+        possible_moves = self.map.makeMoves(node.player, node.arr)
+        node.children = [MC_Node(newMap, playerMove, move, node) for (playerMove, move, newMap) in possible_moves]
         child_node = self.best_child(node)
-        child_node.children = self.makeMoves(child_node.player, child_node.arr, expanded)
+        #child_node.children = self.makeMoves(child_node.player, child_node.arr, expanded)
         expanded.append((child_node.player, child_node.arr))
         return child_node
     
@@ -70,7 +72,7 @@ class MCTS:
         current_node = node
         while not self.isTerminalState(node.player, node.arr) and len(current_node.children) != 0:
             current_node = self.best_child(current_node)
-        return current_node.expand()
+        return self.expand(current_node, expanded)
 
     def best_action(self, node: MC_Node, expanded: list, simulation_no):
 
