@@ -13,6 +13,9 @@ class MCTS:
     def __init__(self, map: Map):
         self.map = map
 
+    def reward(self):
+        return (self.map.width*self.map.height)**2
+
     def isWinState(self, player: Player):
         return player.isStanding() and player.p1 == self.map.goal
 
