@@ -70,7 +70,7 @@ class MCTS:
         current_node = node
         while not self.isTerminalState(node.player, node.arr) and len(current_node.children) != 0:
             current_node = self.best_child(current_node)
-        return current_node
+        return current_node.expand()
 
     def best_action(self, node: MC_Node, expanded: list, simulation_no):
 
