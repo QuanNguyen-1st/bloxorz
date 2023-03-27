@@ -87,7 +87,8 @@ class MCTS:
     def solve(self, simulation_no = 4000):
         expanded = []
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
-        start_node.children = self.map.allMoves(start_node.player, start_node.arr)
+        possible_moves = self.map.allMoves(start_node.player, start_node.arr)
+        start_node.children = [MC_Node(newMap, playerMove, move, start_node) for (playerMove, move, newMap) in possible_moves]
         expanded.append((start_node.player, start_node.arr))
         selected_node = self.best_action(start_node, expanded, simulation_no)
         self.VNode_count = len(expanded)
