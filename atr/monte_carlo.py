@@ -26,11 +26,9 @@ class MCTS:
         return self.isWinState(player) or self.isLoseState(player, arr)
 
     def expand(self, node: MC_Node, expanded: list):
-        (playerMove, move, newMap) = node._untried_actions.pop()
-        child_node = MC_Node(newMap, playerMove, move, node)
-        child_node._untried_actions = self.makeMoves(playerMove, newMap, expanded)
-        node.children.append(child_node)
-        expanded.append((playerMove, newMap))
+        child_node = self.best_child(node)
+        child_node.children = self.makeMoves(child_node.player, child_node.arr, expanded)
+        expanded.append((child_node.player, child_node.arr))
         return child_node
     
     def makeMoves(self, player: Player, arr: list, expanded: list):
@@ -45,6 +43,7 @@ class MCTS:
         while not self.isTerminalState(Player, Map) and count <= 100:
             # possible_moves = self.map.allMoves(Player, Map)
             possible_moves = self.makeMoves(Player, Map, expanded_and_rollout)
+            count += 1
             if (len(possible_moves)) == 0:
                 return -1
             (playerMove, move, newMap) = random.choice(possible_moves)
@@ -69,13 +68,8 @@ class MCTS:
 
     def _tree_policy(self, node: MC_Node, expanded: list):
         current_node = node
-        while not self.isTerminalState(node.player, node.arr):
-            if not current_node.is_fully_expanded():
-                return self.expand(current_node, expanded)
-            elif len(current_node.children) != 0:
-                current_node = self.best_child(current_node)
-            else:
-                break
+        while not self.isTerminalState(node.player, node.arr) and len(current_node.children) != 0:
+            current_node = self.best_child(current_node)
         return current_node
 
     def best_action(self, node: MC_Node, expanded: list, simulation_no):
@@ -85,18 +79,15 @@ class MCTS:
             reward = self.rollout(v, expanded)
             self.back_propagate(v, reward)
 
-        curr_node = node
-        while not self.isTerminalState(curr_node.player, node.arr):
-            if len(curr_node.children) != 0:
-                curr_node = self.best_child(curr_node)
-            else:
-                break
-        return curr_node
+        current_node = node
+        while not self.isTerminalState(node.player, node.arr) and len(current_node.children) != 0:
+            current_node = self.best_child(current_node)
+        return current_node
 
     def solve(self, simulation_no = 4000):
         expanded = []
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
-        start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
+        start_node.children = self.map.allMoves(start_node.player, start_node.arr)
         expanded.append((start_node.player, start_node.arr))
         selected_node = self.best_action(start_node, expanded, simulation_no)
         self.VNode_count = len(expanded)
