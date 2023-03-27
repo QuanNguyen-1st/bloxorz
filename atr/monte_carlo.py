@@ -79,14 +79,14 @@ class MCTS:
             elif len(current_node.children) != 0:
                 current_node = self.best_child(current_node)
             else:
-                break
+                return None
         return current_node
 
     def best_action(self, node: MC_Node, expanded: list, simulation_no):
 
         for i in range(simulation_no):
             v = self._tree_policy(node, expanded)
-            reward = self.rollout(v, expanded)
+            if v: reward = self.rollout(v, expanded)
             self.back_propagate(v, reward)
 
         curr_node = node
@@ -108,3 +108,5 @@ class MCTS:
             self.can_find_win_path = False
             # print("Haven't found win path, best path so far is: ")
         self.winPath = selected_node.makePathTo()
+
+
