@@ -51,7 +51,7 @@ class MCTS:
             expanded_and_rollout.append((playerMove, newMap))
             Player = playerMove
             Map = newMap
-        return self.reward(self.map) if self.isWinState(Player) else -1
+        return self.reward() if self.isWinState(Player) else -1
 
     def back_propagate(self, node: MC_Node, result):
         node.N += 1.
