@@ -41,3 +41,9 @@ class Game:
         winPath = game_to_solve.winPath
         self.solution = list(winPath.split(" "))
         print(process.memory_info().rss / 1024 / 1024 - temp_memory, count_steps(self.solution), game_to_solve.VNode_count)
+        if (algorithm == Algorithm.MCTS):
+            if game_to_solve.can_find_win_path:
+                pass
+            else:
+                print("You Gay!")
+        print(winPath)
