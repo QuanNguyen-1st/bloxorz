@@ -26,12 +26,15 @@ class MCTS:
         return self.isWinState(player) or self.isLoseState(player, arr)
 
     def expand(self, node: MC_Node, expanded: list):
-        possible_moves = self.map.makeMoves(node.player, node.arr)
+        possible_moves = self.makeMoves(node.player, node.arr, expanded)
         node.children = [MC_Node(newMap, playerMove, move, node) for (playerMove, move, newMap) in possible_moves]
-        child_node = self.best_child(node)
-        #child_node.children = self.makeMoves(child_node.player, child_node.arr, expanded)
-        expanded.append((child_node.player, child_node.arr))
-        return child_node
+        
+        # if self.isTerminalState(node.player, node.arr) or len(node.children) == 0:
+        #     return
+        # child_node = self.best_child(node)
+        # #child_node.children = self.makeMoves(child_node.player, child_node.arr, expanded)
+        # expanded.append((child_node.player, child_node.arr))
+        # return child_node
     
     def makeMoves(self, player: Player, arr: list, expanded: list):
         moves = self.map.legalMoves(player, arr)
@@ -61,6 +64,9 @@ class MCTS:
             self.back_propagate(node.parent, result)
 
     def best_child(self, node: MC_Node):
+        for child in node.children:
+            if self.isWinState(child.player):
+                return child
         max_value = node.children[0].value()
         for child in node.children:
             max_value = max(child.value(), max_value)
@@ -72,12 +78,15 @@ class MCTS:
         current_node = node
         while not self.isTerminalState(node.player, node.arr) and len(current_node.children) != 0:
             current_node = self.best_child(current_node)
-        return self.expand(current_node, expanded)
+        self.expand(current_node, expanded)
+        expanded.append((current_node.player, current_node.arr))
+        return current_node
 
     def best_action(self, node: MC_Node, expanded: list, simulation_no):
 
         for i in range(simulation_no):
             v = self._tree_policy(node, expanded)
+            # print(v)
             reward = self.rollout(v, expanded)
             self.back_propagate(v, reward)
 
@@ -86,13 +95,14 @@ class MCTS:
             current_node = self.best_child(current_node)
         return current_node
 
-    def solve(self, simulation_no = 4000):
+    def solve(self, simulation_no = 2000):
         expanded = []
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
-        possible_moves = self.map.allMoves(start_node.player, start_node.arr)
-        start_node.children = [MC_Node(newMap, playerMove, move, start_node) for (playerMove, move, newMap) in possible_moves]
+        # possible_moves = self.map.allMoves(start_node.player, start_node.arr)
+        # start_node.children = [MC_Node(newMap, playerMove, move, start_node) for (playerMove, move, newMap) in possible_moves]
         expanded.append((start_node.player, start_node.arr))
         selected_node = self.best_action(start_node, expanded, simulation_no)
+        print(selected_node.value())
         self.VNode_count = len(expanded)
         if not self.map.hasWon(selected_node.player):
             self.can_find_win_path = False
