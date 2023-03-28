@@ -46,7 +46,7 @@ class MCTS:
         Player = node.player
         Map = node.arr
         count = 0
-        while (not self.isTerminalState(Player, Map)) and count <= 1:
+        while (not self.isTerminalState(Player, Map)) and count <= 100:
             possible_moves = self.makeMoves(Player, Map)
             count += 1
             if count == 100: return 0
@@ -115,7 +115,7 @@ class MCTS:
                 break
         return curr_node
 
-    def solve(self, simulation_no = 10000):
+    def solve(self, simulation_no = 40000):
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
         self.expanded.append((start_node.player, start_node.arr))

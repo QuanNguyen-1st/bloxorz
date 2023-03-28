@@ -31,4 +31,4 @@ if __name__== "__main__":
         else: 
             print("Error! Read README.md for more details!")
     else:
-        main(level="06  ", algorithm=Algorithm.MCTS)
+        main(level="01", algorithm=Algorithm.MCTS)
