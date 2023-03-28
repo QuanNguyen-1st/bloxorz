@@ -27,6 +27,7 @@ class MCTS:
         return self.isWinState(player) or self.isLoseState(player, arr)
 
     def expand(self, node: MC_Node):
+        self.VNode_count += 1
         (playerMove, move, newMap) = node._untried_actions.pop()
         child_node = MC_Node(newMap, playerMove, move, node)
         # possible_moves = self.makeMoves(playerMove, newMap)
@@ -45,8 +46,7 @@ class MCTS:
         Player = node.player
         Map = node.arr
         count = 0
-        while (not self.isTerminalState(Player, Map)) and count <= 100:
-            # possible_moves = self.map.allMoves(Player, Map)
+        while (not self.isTerminalState(Player, Map)) and count <= 1:
             possible_moves = self.makeMoves(Player, Map)
             count += 1
             if count == 100: return 0
@@ -55,7 +55,13 @@ class MCTS:
             (playerMove, move, newMap) = random.choice(possible_moves)
             Player = playerMove
             Map = newMap
-        return self.reward() if self.isWinState(Player) else -1
+        if self.isTerminalState(Player, Map):
+            if (self.isWinState(Player)):
+                return 1
+            else:
+                return -1
+        else:
+            return 0
 
     def back_propagate(self, node: MC_Node, result):
         while node:
