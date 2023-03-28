@@ -11,7 +11,7 @@ steps = []
 virtual_steps = []
 # path = "result/result_" + algorithm + ".xlsx"
 # input = pd.read_excel(path)
-for i in range (28, 29):
+for i in range (26,27):
     level = str(i)
     if len(level) < 2:
         level = "0" + level
