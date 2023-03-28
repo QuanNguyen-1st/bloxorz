@@ -29,6 +29,8 @@ class MCTS:
     def expand(self, node: MC_Node):
         (playerMove, move, newMap) = node._untried_actions.pop()
         child_node = MC_Node(newMap, playerMove, move, node)
+        # possible_moves = self.makeMoves(playerMove, newMap)
+        # child_node._untried_actions = random.shuffle(possible_moves)
         child_node._untried_actions = self.makeMoves(playerMove, newMap)
         node.children.append(child_node)
         self.expanded.append((child_node.player, child_node.arr))
@@ -68,7 +70,7 @@ class MCTS:
         max_value = float('-inf')
         best_child = None
         for child in node.children:
-            if child.value() > max_value:
+            if child.value() > max_value and not child.dead and not self.isLoseState(child.player, child.arr):
                 max_value = child.value()
                 best_child = child
                 #print(child, child.value())
@@ -80,16 +82,22 @@ class MCTS:
             if not current_node.is_fully_expanded():
                 return self.expand(current_node)
             elif len(current_node.children) != 0:
-                current_node = self.best_child(current_node)
+                temp_node = self.best_child(current_node)
+                if not temp_node:
+                    current_node.dead = True
+                    current_node = current_node.parent
+                else:
+                    current_node = temp_node
             else:
-                break
+                current_node.dead = True
+                current_node = current_node.parent
         return current_node
 
     def best_action(self, node: MC_Node, simulation_no):
 
         for i in range(simulation_no):
             v = self._tree_policy(node)
-            #(v, v.value(), len(v.children), len(v._untried_actions))
+            print(v, v.value())
             reward = self.rollout(v)
             self.back_propagate(v, reward)
 
@@ -101,10 +109,9 @@ class MCTS:
                 break
         return curr_node
 
-    def solve(self, simulation_no = 1000000):
+    def solve(self, simulation_no = 10000):
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
-        start_node.level = 0
         self.expanded.append((start_node.player, start_node.arr))
         selected_node = self.best_action(start_node, simulation_no)
         self.VNode_count = len(self.expanded)
