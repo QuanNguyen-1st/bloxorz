@@ -26,6 +26,7 @@ class MCTS:
         return self.isWinState(player) or self.isLoseState(player, arr)
 
     def expand(self, node: MC_Node):
+        self.VNode_count += 1
         (playerMove, move, newMap) = node._untried_actions.pop()
         child_node = MC_Node(newMap, playerMove, move, node)
         child_node._untried_actions = self.makeMoves(playerMove, newMap)
@@ -33,7 +34,7 @@ class MCTS:
         return child_node
     
     def makeMoves(self, player: Player, arr: list):
-        moves = self.map.legalMoves(player, arr)
+        return self.map.allMoves(player, arr)
         return [(playerMove, move, newMap) for (playerMove, move, newMap) in moves]
 
     def rollout(self, node: MC_Node):
@@ -41,8 +42,7 @@ class MCTS:
         Player = node.player
         Map = node.arr
         count = 0
-        while (not self.isTerminalState(Player, Map)) and count <= 100:
-            # possible_moves = self.map.allMoves(Player, Map)
+        while (not self.isTerminalState(Player, Map)) and count <= 1:
             possible_moves = self.makeMoves(Player, Map)
             count += 1
             if (len(possible_moves)) == 0:
@@ -50,7 +50,13 @@ class MCTS:
             (playerMove, move, newMap) = random.choice(possible_moves)
             Player = playerMove
             Map = newMap
-        return self.reward() if self.isWinState(Player) else -1
+        if self.isTerminalState(Player, Map):
+            if (self.isWinState(Player)):
+                return 1
+            else:
+                return -1
+        else:
+            return 0
 
     def back_propagate(self, node: MC_Node, result):
         while node:
@@ -66,7 +72,7 @@ class MCTS:
         for child in node.children:
             max_value = max(child.value(), max_value)
         max_nodes = [n for n in node.children if n.value() == max_value]
-        best_child = random.choice(max_nodes)
+        best_child = max_nodes.pop()
         return best_child
 
     def _tree_policy(self, node: MC_Node):
@@ -84,6 +90,8 @@ class MCTS:
 
         for i in range(simulation_no):
             v = self._tree_policy(node)
+            if v.value() > 0:
+                print(v, v.value(), end = " ")
             print(v, v.value())
             reward = self.rollout(v)
             self.back_propagate(v, reward)
@@ -96,9 +104,9 @@ class MCTS:
                 break
         return curr_node
 
-    def solve(self, simulation_no = 1000):
+    def solve(self, simulation_no = 100000):
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
-        start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
+        start_node._untried_actions = self.makeMoves(start_node.player, start_node.arr)
         selected_node = self.best_action(start_node, simulation_no)
         if not self.map.hasWon(selected_node.player):
             self.can_find_win_path = False
