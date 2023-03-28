@@ -54,7 +54,7 @@ class MC_Node(Node):
         self.Q = 0
         self.children = []
         self._untried_actions = []
-        self.level = self.parent + 1
+        if self.parent: self.level = self.parent.level + 1
 
     def is_fully_expanded(self):
         return len(self._untried_actions) == 0
