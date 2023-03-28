@@ -115,7 +115,7 @@ class MCTS:
                 break
         return curr_node
 
-    def solve(self, simulation_no = 20000):
+    def solve(self, simulation_no = 25000):
         start_node = MC_Node(self.map.arr, Player(self.map.start, self.map.start), None, None)
         start_node._untried_actions = self.map.allMoves(start_node.player, start_node.arr)
         self.expanded.append((start_node.player, start_node.arr))
