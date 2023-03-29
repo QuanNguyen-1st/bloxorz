@@ -5,15 +5,8 @@ from atr.map import Map
 class AStar:
     winPath = []
     VNode_count = 1
-    heuristic_func = ["Chebyshev", "Euclidean"]
-    def __init__(self, map: Map, h_func = "Chebyshev"):
-        assert h_func in self.heuristic_func
+    def __init__(self, map: Map):
         self.map = map
-        self.h_func = h_func
-
-    def eucDistance(self, player: Player):
-        # Dont know euclidean distance with this shit
-        return
 
     def chebDistance(self, player: Player):
         h1 = max(abs(player.p1.x - self.map.goal.x), abs(player.p1.y - self.map.goal.y))
@@ -27,10 +20,7 @@ class AStar:
         # else:
         #     self.VNode_count += 4
         for (playerMove, move, newMap) in self.map.legalMoves(node.player, arr):
-            if self.h_func == "Chebyshev":
-                h_child = self.chebDistance(playerMove)
-            elif self.h_func == "Euclidean":
-                h_child = self.eucDistance(playerMove)
+            h_child = self.chebDistance(playerMove)
             children.append(A_star_Node(newMap, playerMove, move, node, node.g + 1, h_child))
         # self.VNode_count += len(children)
         return children
@@ -52,10 +42,7 @@ class AStar:
         closed_list = []
         player_start = Player(self.map.start, self.map.start)
         playerDisToWin = None
-        if self.h_func == "Chebyshev":
-            playerDisToWin = self.chebDistance(player_start)
-        elif self.h_func == "Euclidean":
-            playerDisToWin = self.eucDistance(player_start)
+        playerDisToWin = self.chebDistance(player_start)
         start_node = A_star_Node(self.map.arr, player_start, None, None, 0, playerDisToWin)
 
         open_list.append(start_node)
